@@ -12,8 +12,6 @@ group :development, :test do
   gem 'rake'
   gem 'minitest', '~> 5.20'
   gem 'minitest-reporters', '~> 1.6'
-  gem 'webmock', '~> 3.19'      # Mock API calls
-  gem 'vcr', '~> 6.2'           # Record/replay API responses
   gem 'simplecov', '~> 0.22', require: false
   gem 'rubocop', '~> 1.50', require: false
   gem 'brakeman', '~> 6.0', require: false
