@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1a1a2e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .header-left h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1a1a2e 0%, #4a90e2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .header-left .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .badge {
+      background: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #4a90e2;
+      border: 1px solid #e5e7eb;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 8px;
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .kpi-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+      transition: all 0.2s ease;
+      border: 1px solid #f0f0f0;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12);
+    }
+
+    .kpi-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 42px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+    }
+
+    .kpi-description {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+
+    .trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 30px;
+    }
+
+    .trend.positive {
+      background: #e6f7e6;
+      color: #2e7d32;
+    }
+
+    .trend.negative {
+      background: #fee2e2;
+      color: #c62828;
+    }
+
+    .trend.neutral {
+      background: #f0f0f0;
+      color: #6b7280;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      margin-bottom: 48px;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border: 1px solid #f0f0f0;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .chart-subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .chart-image {
+      width: 100%;
+      border-radius: 16px;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding: 24px 0;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .footer a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+      .kpi-value {
+        font-size: 32px;
+      }
+      .kpi-grid {
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <h1>📊 <%= title %></h1>
+        <div class="subtitle"><%= subtitle %></div>
+      </div>
+      <div class="header-right">
+        <div class="badge">Live Data</div>
+        <div class="timestamp">Last updated: <%= generated_at.strftime('%B %d, %Y at %H:%M UTC') %></div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <% data.each do |repo_name, repo| %>
+        <div class="kpi-card">
+          <div class="kpi-title"><%= repo[:display_name] %></div>
+          <div class="kpi-value"><%= number_with_delimiter(repo[:total_views]) %></div>
+          <div class="kpi-description"><%= repo[:description] %></div>
+          <div>
+            <span class="trend <%= repo[:wow_growth] >= 0 ? 'positive' : 'negative' %>">
+              <%= repo[:wow_growth] >= 0 ? '↑' : '↓' %> <%= repo[:wow_growth].abs %>% vs last week
+            </span>
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+            📈 <%= repo[:avg_views] %> avg daily views
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% data.each do |repo_name, repo| %>
+      <div class="chart-section">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div>
+              <div class="chart-title"><%= repo[:display_name] %></div>
+              <div class="chart-subtitle">Daily views over the last 30 days</div>
+            </div>
+          </div>
+          <img class="chart-image" src="<%= repo_name %>_trend.png" alt="<%= repo[:display_name] %> Trend Chart">
+        </div>
+      </div>
+    <% end %>
+
+    <div class="footer">
+      <p>Generated with <strong>ruby-libgd</strong> • <a href="https://github.com/ggerman/ruby-libgd">github.com/ggerman/ruby-libgd</a></p>
+      <p>Created by <strong>Germán Alberto Giménez Silva</strong> &lt;ggerman@gmail.com&gt;</p>
+    </div>
+  </div>
+</body>
+</html>
