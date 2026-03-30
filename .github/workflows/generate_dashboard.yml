@@ -1,0 +1,40 @@
+name: Generate Dashboard
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+      - 'config.yml'
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgd-dev pkg-config
+      - name: Install gems
+        run: bundle install
+      - name: Generate dashboard
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ruby scripts/generate_dashboard.rb
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output/dashboard
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

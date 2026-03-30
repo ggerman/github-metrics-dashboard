@@ -1,0 +1,41 @@
+name: Archive GitHub Metrics
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout metrics vault
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/metrics-vault
+          token: ${{ secrets.METRICS_VAULT_TOKEN }}
+          path: vault
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgd-dev pkg-config
+      - name: Install gems
+        run: gem install ruby-libgd octokit csv
+      - name: Fetch and archive metrics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p vault/data/raw
+          ruby scripts/archive_metrics.rb --output vault/data/raw
+      - name: Commit and push
+        run: |
+          cd vault
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add data/
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: daily metrics archive for $(date +'%Y-%m-%d')"
+          git push
