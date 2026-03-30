@@ -26,7 +26,8 @@ repos = config['repositories']
 def find_font
   fonts = [
     '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf'
+    '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+    '/usr/share/fonts/truetype/ubuntu/Ubuntu-Regular.ttf'
   ]
   fonts.find { |f| File.exist?(f) }
 end
@@ -67,10 +68,11 @@ repos.each do |repo|
       chart = ProfessionalChart.new(
         width: 900,
         height: 400,
-        title: "#{repo['display_name']} - Daily Views Trend"
+        title: "#{repo['display_name']} - Daily Views Trend",
+        font_path: FONT_PATH
       )
-      chart.font_path = FONT_PATH
       chart.render_line_chart(counts, dates, "#{OUTPUT_DIR}/#{repo_name}_trend.png")
+      puts "  ✅ Chart generated: #{repo_name}_trend.png"
     end
     
     data_sets[repo_name] = {
@@ -100,7 +102,9 @@ end
 
 puts "\n🌐 Generating HTML dashboard..."
 
+# Make sure the template class is available
 require_relative '../lib/dashboard/professional_template'
+
 template = ProfessionalTemplate.new(
   title: config['dashboard']['title'],
   subtitle: config['dashboard']['subtitle'],
@@ -113,3 +117,4 @@ template.render("#{OUTPUT_DIR}/index.html")
 puts "\n" + "=" * 60
 puts "✅ Dashboard generated successfully!"
 puts "📁 Output: #{OUTPUT_DIR}/index.html"
+puts "📊 Charts: #{OUTPUT_DIR}/*_trend.png"
