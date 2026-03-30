@@ -23,16 +23,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Install system dependencies (libgd)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgd-dev pkg-config
+      
       - name: Set up Ruby ${{ matrix.ruby-version }}
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
-      
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgd-dev pkg-config
       
       - name: Install gems
         run: bundle install
@@ -55,17 +55,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Install system dependencies (libgd)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgd-dev pkg-config
+      
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
       
-      - name: Install rubocop via bundler
+      - name: Install rubocop
         run: bundle add rubocop --group=development
       
       - name: Run rubocop
-        run: bundle exec rubocop || true   # Don't fail the build for style issues
+        run: bundle exec rubocop || true
 
   security:
     name: Security Scan
@@ -75,13 +80,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Install system dependencies (libgd)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgd-dev pkg-config
+      
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
           bundler-cache: true
       
-      - name: Install brakeman via bundler
+      - name: Install brakeman
         run: bundle add brakeman --group=development
       
       - name: Run Brakeman
