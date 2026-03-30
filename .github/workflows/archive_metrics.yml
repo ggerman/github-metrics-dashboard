@@ -36,7 +36,7 @@ jobs:
       
       - name: Fetch and archive metrics
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           mkdir -p vault/data/raw
           ruby dashboard/scripts/archive_metrics.rb --output vault/data/raw
