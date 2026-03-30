@@ -66,8 +66,8 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
       
-      - name: Install rubocop
-        run: bundle add rubocop --group=development
+      - name: Install gems
+        run: bundle install
       
       - name: Run rubocop
         run: bundle exec rubocop || true
@@ -91,8 +91,8 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
       
-      - name: Install brakeman
-        run: bundle add brakeman --group=development
+      - name: Install gems
+        run: bundle install
       
       - name: Run Brakeman
         run: bundle exec brakeman --no-pager --format json > brakeman.json || true
