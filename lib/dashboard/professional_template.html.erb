@@ -69,10 +69,10 @@
       margin-top: 8px;
     }
 
-    /* KPI Cards */
+    /* KPI Grid */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 24px;
       margin-bottom: 48px;
     }
@@ -103,10 +103,10 @@
       font-size: 42px;
       font-weight: 700;
       color: #1a1a2e;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
-    .kpi-description {
+    .kpi-sub {
       font-size: 13px;
       color: #6b7280;
       margin-bottom: 16px;
@@ -137,8 +137,11 @@
       color: #6b7280;
     }
 
-    /* Chart Section */
-    .chart-section {
+    /* Two-column layout for charts */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
       margin-bottom: 48px;
     }
 
@@ -175,6 +178,55 @@
       border-radius: 16px;
     }
 
+    /* Referrers Table */
+    .referrers-section {
+      margin-bottom: 48px;
+    }
+
+    .referrers-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid #f0f0f0;
+    }
+
+    .referrers-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .referrers-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .referrers-table th,
+    .referrers-table td {
+      padding: 12px 8px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .referrers-table th {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .referrer-bar {
+      background: #e6f0ff;
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .referrer-bar-fill {
+      background: #4a90e2;
+      height: 100%;
+      border-radius: 20px;
+    }
+
     /* Footer */
     .footer {
       margin-top: 48px;
@@ -200,6 +252,9 @@
       .kpi-grid {
         gap: 16px;
       }
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -216,41 +271,104 @@
       </div>
     </div>
 
-    <div class="kpi-grid">
-      <% data.each do |repo_name, repo| %>
-        <div class="kpi-card">
-          <div class="kpi-title"><%= repo[:display_name] %></div>
-          <div class="kpi-value"><%= number_with_delimiter(repo[:total_views]) %></div>
-          <div class="kpi-description"><%= repo[:description] %></div>
-          <div>
-            <span class="trend <%= repo[:wow_growth] >= 0 ? 'positive' : 'negative' %>">
-              <%= repo[:wow_growth] >= 0 ? '↑' : '↓' %> <%= repo[:wow_growth].abs %>% vs last week
-            </span>
-          </div>
-          <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
-            📈 <%= repo[:avg_views] %> avg daily views
-          </div>
-        </div>
-      <% end %>
-    </div>
-
+    <!-- KPI Cards for each repository -->
     <% data.each do |repo_name, repo| %>
-      <div class="chart-section">
-        <div class="chart-card">
-          <div class="chart-header">
+      <div style="margin-bottom: 48px;">
+        <h2 style="font-size: 20px; margin-bottom: 16px; color: #1a1a2e;"><%= repo[:display_name] %></h2>
+        
+        <div class="kpi-grid">
+          <!-- Views Card -->
+          <div class="kpi-card">
+            <div class="kpi-title">👁️ Views</div>
+            <div class="kpi-value"><%= number_with_delimiter(repo[:views][:total]) %></div>
+            <div class="kpi-sub"><%= repo[:views][:avg] %> avg/day</div>
             <div>
-              <div class="chart-title"><%= repo[:display_name] %></div>
-              <div class="chart-subtitle">Daily views over the last 30 days</div>
+              <span class="trend <%= repo[:views][:wow] >= 0 ? 'positive' : 'negative' %>">
+                <%= repo[:views][:wow] >= 0 ? '↑' : '↓' %> <%= repo[:views][:wow].abs %>% vs last week
+              </span>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+              👥 <%= number_with_delimiter(repo[:views][:uniques]) %> unique visitors
             </div>
           </div>
-          <img class="chart-image" src="<%= repo_name %>_trend.png" alt="<%= repo[:display_name] %> Trend Chart">
+
+          <!-- Clones Card -->
+          <div class="kpi-card">
+            <div class="kpi-title">📦 Clones</div>
+            <div class="kpi-value"><%= number_with_delimiter(repo[:clones][:total]) %></div>
+            <div class="kpi-sub"><%= repo[:clones][:avg] %> avg/day</div>
+            <div>
+              <span class="trend <%= repo[:clones][:wow] >= 0 ? 'positive' : 'negative' %>">
+                <%= repo[:clones][:wow] >= 0 ? '↑' : '↓' %> <%= repo[:clones][:wow].abs %>% vs last week
+              </span>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+              👥 <%= number_with_delimiter(repo[:clones][:uniques]) %> unique cloners
+            </div>
+          </div>
         </div>
+
+        <!-- Charts Row -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">📈 Views Trend</div>
+                <div class="chart-subtitle">Daily views over the last 30 days</div>
+              </div>
+            </div>
+            <img class="chart-image" src="<%= repo_name %>_views_trend.png" alt="Views Trend">
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">📊 Clones Trend</div>
+                <div class="chart-subtitle">Daily clones over the last 30 days</div>
+              </div>
+            </div>
+            <img class="chart-image" src="<%= repo_name %>_clones_trend.png" alt="Clones Trend">
+          </div>
+        </div>
+
+        <!-- Referrers Table -->
+        <% if repo[:referrers].any? %>
+          <div class="referrers-section">
+            <div class="referrers-card">
+              <div class="referrers-title">🌐 Top Referral Sources</div>
+              <table class="referrers-table">
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Referrals</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% total_refs = repo[:referrers].sum { |r| r[:count] } %>
+                  <% repo[:referrers].each do |ref| %>
+                    <tr>
+                      <td><%= ref[:source] %></td>
+                      <td><%= number_with_delimiter(ref[:count]) %></td>
+                      <td>
+                        <div class="referrer-bar">
+                          <div class="referrer-bar-fill" style="width: <%= (ref[:count].to_f / total_refs * 100).round %>%"></div>
+                        </div>
+                        <span style="font-size: 11px; margin-left: 8px;"><%= (ref[:count].to_f / total_refs * 100).round(1) %>%</span>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% end %>
       </div>
     <% end %>
 
     <div class="footer">
       <p>Generated with <strong>ruby-libgd</strong> • <a href="https://github.com/ggerman/ruby-libgd">github.com/ggerman/ruby-libgd</a></p>
       <p>Created by <strong>Germán Alberto Giménez Silva</strong> &lt;ggerman@gmail.com&gt;</p>
+      <p>Data from GitHub API • Historical data stored in <strong>metrics-vault</strong></p>
     </div>
   </div>
 </body>
