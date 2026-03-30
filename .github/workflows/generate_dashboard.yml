@@ -17,24 +17,49 @@ jobs:
       contents: write
       pages: write
       id-token: write
+    
     steps:
-      - name: Checkout
+      - name: Checkout dashboard repo (for scripts)
         uses: actions/checkout@v4
+        with:
+          path: dashboard
+      
+      - name: Checkout metrics vault (for data)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/metrics-vault
+          token: ${{ secrets.METRICS_VAULT_TOKEN }}
+          path: vault
+      
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
+          bundler-cache: true
+      
       - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgd-dev pkg-config
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgd-dev pkg-config
+      
       - name: Install gems
         run: bundle install
+        working-directory: dashboard
+      
       - name: Generate dashboard
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ruby scripts/generate_dashboard.rb
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Create symlink or copy data from vault to dashboard
+          mkdir -p dashboard/data
+          cp -r vault/data/raw dashboard/data/raw
+          cd dashboard
+          ruby scripts/generate_dashboard.rb
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: output/dashboard
+          path: dashboard/output/dashboard
+      
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
