@@ -11,7 +11,7 @@ Automated traffic analytics dashboard for GitHub repositories. Keeps your data f
 
 ## Your Dashboard URL
 
-`https://TU_USUARIO.github.io/github-metrics-dashboard/`
+`https://GITHUB_USER_NAME.github.io/github-metrics-dashboard/`
 
 ## Author
 
