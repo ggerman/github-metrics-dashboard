@@ -1,0 +1,27 @@
+repositories:
+  - owner: ggerman
+    name: ruby-libgd
+    display_name: ruby-libgd
+    description: "Native Ruby bindings for GD graphics library"
+    color: "#4a90e2"
+  - owner: ggerman
+    name: libgd-gis
+    display_name: libgd-gis
+    description: "Geospatial rendering for Ruby using libgd"
+    color: "#50c878"
+
+dashboard:
+  title: "GitHub Metrics Dashboard"
+  subtitle: "Traffic analytics for open source projects"
+  update_frequency: "Weekly"
+
+charts:
+  default_height: 400
+  default_width: 800
+  theme:
+    background: "#ffffff"
+    primary: "#4a90e2"
+
+metrics:
+  retention_days: 365
+  forecast_days: 30
