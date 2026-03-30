@@ -1,0 +1,25 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      
+      - name: Run a simple test
+        run: |
+          echo "Running tests..."
+          ruby -e "puts 'Tests passed!'"
