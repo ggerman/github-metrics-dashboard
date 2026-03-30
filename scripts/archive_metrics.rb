@@ -14,7 +14,7 @@ TOKEN = ENV['GITHUB_TOKEN']
 abort 'GITHUB_TOKEN not set' unless TOKEN
 
 client = Octokit::Client.new(access_token: TOKEN)
-config = YAML.load_file('config.yml')
+config = YAML.load_file('dashboard/config.yml')
 
 config['repositories'].each do |repo|
   repo_full = "#{repo['owner']}/#{repo['name']}"
