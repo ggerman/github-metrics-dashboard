@@ -33,8 +33,8 @@ OUTPUT_DIR = options[:output] || 'data/raw'
 CONFIG_PATH = options[:config] || 'dashboard/config.yml'
 VERBOSE = options[:verbose] || false
 
-TOKEN = ENV['GITHUB_TOKEN']
-abort '❌ ERROR: GITHUB_TOKEN environment variable not set' unless TOKEN
+TOKEN = ENV['GH_TOKEN']
+abort '❌ ERROR: GH_TOKEN environment variable not set' unless TOKEN
 
 # Create output directory if it doesn't exist
 FileUtils.mkdir_p(OUTPUT_DIR)
