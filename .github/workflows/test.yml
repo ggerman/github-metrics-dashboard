@@ -2,14 +2,55 @@ name: CI Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
+    paths-ignore:
+      - 'output/**'
+      - 'README.md'
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 jobs:
   test:
+    name: Run Tests
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        ruby-version: ['3.2', '3.3', '3.4']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgd-dev pkg-config
+      
+      - name: Install gems
+        run: bundle install
+      
+      - name: Run tests
+        run: bundle exec rake test
+      
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.ruby-version }}
+          path: coverage/
+          retention-days: 7
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,8 +59,29 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
+          bundler-cache: true
       
-      - name: Run a simple test
+      - name: Install rubocop
+        run: gem install rubocop
+      
+      - name: Run rubocop
+        run: rubocop
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Brakeman
         run: |
-          echo "Running tests..."
-          ruby -e "puts 'Tests passed!'"
+          gem install brakeman
+          brakeman --no-pager --format json > brakeman.json || true
+      
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: brakeman.json
