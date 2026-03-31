@@ -53,7 +53,10 @@ module Analytics
 
       max_value = @values.max
       index = @values.index(max_value)
-      { value: max_value.round, index: index, date: @dates[index] if @dates }
+      
+      result = { value: max_value.round, index: index }
+      result[:date] = @dates[index] if @dates
+      result
     end
 
     def forecast(days = 30)
