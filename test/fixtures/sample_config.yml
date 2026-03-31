@@ -1,0 +1,23 @@
+---
+repositories:
+- owner: test
+  name: test-repo
+  display_name: Test Repository
+  description: A test repository for metrics
+  color: "#4a90e2"
+
+dashboard:
+  title: Test Dashboard
+  subtitle: Test metrics
+  update_frequency: Weekly
+
+charts:
+  default_height: 400
+  default_width: 800
+  theme:
+    background: "#ffffff"
+    primary: "#4a90e2"
+
+metrics:
+  retention_days: 365
+  forecast_days: 30
