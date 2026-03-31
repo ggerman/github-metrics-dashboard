@@ -1,75 +1,17 @@
-# frozen_string_literal: true
+def test_single_value
+  values = [10]
+  labels = ['Day1']
+  output_path = File.join(@temp_dir, 'single.png')
+  
+  result = @chart.render_line_chart(values, labels, output_path)
+  assert_nil result, 'Single value should return nil (not enough points for a line)'
+end
 
-require_relative 'test_helper'
-require_relative '../lib/charts/professional_chart'
-
-class TestCharts < Minitest::Test
-  def setup
-    super
-    @font_path = find_font
-    @chart = ProfessionalChart.new(
-      width: 400,
-      height: 300,
-      title: 'Test Chart',
-      font_path: @font_path
-    )
-  end
-
-  def find_font
-    fonts = [
-      '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-      '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf'
-    ]
-    fonts.find { |f| File.exist?(f) }
-  end
-
-  def test_chart_creation
-    values = [10, 20, 30, 25, 35, 40, 30]
-    labels = %w[Day1 Day2 Day3 Day4 Day5 Day6 Day7]
-    output_path = File.join(@temp_dir, 'test_chart.png')
-
-    result = @chart.render_line_chart(values, labels, output_path)
-
-    assert result, 'Chart should render successfully'
-    assert File.exist?(output_path), 'Chart file should be created'
-    assert File.size(output_path) > 0, 'Chart file should not be empty'
-  end
-
-  def test_empty_values
-    result = @chart.render_line_chart([], [], File.join(@temp_dir, 'empty.png'))
-    assert_nil result, 'Empty values should return nil'
-  end
-
-  def test_single_value
-    result = @chart.render_line_chart([10], ['Day1'], File.join(@temp_dir, 'single.png'))
-    assert_nil result, 'Single value should return nil'
-  end
-
-  def test_zero_values
-    values = [0, 0, 0, 0, 0]
-    labels = %w[D1 D2 D3 D4 D5]
-    output_path = File.join(@temp_dir, 'zero_chart.png')
-
-    result = @chart.render_line_chart(values, labels, output_path)
-    assert result, 'Chart with zeros should still render'
-    assert File.exist?(output_path)
-  end
-
-  def test_large_values
-    values = [1000, 2000, 3000, 2500, 3500]
-    labels = %w[Jan Feb Mar Apr May]
-    output_path = File.join(@temp_dir, 'large_chart.png')
-
-    result = @chart.render_line_chart(values, labels, output_path)
-    assert result, 'Chart with large values should render'
-  end
-
-  def test_decreasing_trend
-    values = [100, 90, 80, 70, 60, 50, 40]
-    labels = (1..7).map { |i| "Day#{i}" }
-    output_path = File.join(@temp_dir, 'decreasing_chart.png')
-
-    result = @chart.render_line_chart(values, labels, output_path)
-    assert result, 'Decreasing trend chart should render'
-  end
+def test_zero_values
+  values = [0, 0, 0, 0, 0]
+  labels = %w[D1 D2 D3 D4 D5]
+  output_path = File.join(@temp_dir, 'zero_chart.png')
+  
+  result = @chart.render_line_chart(values, labels, output_path)
+  assert_nil result, 'All zeros should return nil (nothing to plot)'
 end

@@ -12,7 +12,12 @@ class ProfessionalChart
   end
 
   def render_line_chart(values, labels, output_path)
-    return if values.empty? || values.all?(&:zero?)
+    # Validaciones
+    return nil if values.empty?
+    return nil if values.size == 1  # Necesitamos al menos 2 puntos para una línea
+    
+    # Verificar si todos los valores son cero
+    return nil if values.all? { |v| v == 0 }
     
     img = GD::Image.new(@width, @height)
     
@@ -82,9 +87,11 @@ class ProfessionalChart
       [x.to_i, y.to_i]
     end
     
-    # Area fill
-    area_points = [[left_margin, @height - bottom_margin]] + points + [[@width - right_margin, @height - bottom_margin]]
-    img.filled_polygon(area_points, area_color) if area_points.size >= 3
+    # Area fill (solo si hay puntos válidos)
+    if points.size >= 2
+      area_points = [[left_margin, @height - bottom_margin]] + points + [[@width - right_margin, @height - bottom_margin]]
+      img.filled_polygon(area_points, area_color) if area_points.size >= 3
+    end
     
     # Line
     points.each_cons(2) do |p1, p2|
