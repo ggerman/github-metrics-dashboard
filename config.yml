@@ -9,6 +9,11 @@ repositories:
     display_name: libgd-gis
     description: "Geospatial rendering for Ruby using libgd"
     color: "#50c878"
+  - owner: ggerman
+    name: github-metrics-dashboard
+    display_name: Git Hub Metrics
+    description: "GitHub deletes traffic logs every 14 days. This Ruby dashboard archives them forever with ruby-libgd charts. Automated. Open source. Forever."
+    color: "#FFA500"
 
 dashboard:
   title: "GitHub Metrics Dashboard"
