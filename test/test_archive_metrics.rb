@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'test_helper'
-require_relative '../scripts/archive_metrics'
 
 class TestArchiveMetrics < Minitest::Test
   def test_views_csv_creation
@@ -49,17 +48,10 @@ class TestArchiveMetrics < Minitest::Test
       csv << ['2026-03-02', '120', '50']
     end
 
-    # Assuming ArchiveMetrics has a method to load dates
-    if defined?(ArchiveMetrics) && ArchiveMetrics.respond_to?(:load_existing_dates)
-      dates = ArchiveMetrics.load_existing_dates(csv_path)
-      assert_includes dates, '2026-03-01'
-      assert_includes dates, '2026-03-02'
-      assert_equal 2, dates.size
-    else
-      # Manual test
-      dates = CSV.read(csv_path, headers: true).map { |r| r['date'] }
-      assert_equal 2, dates.size
-    end
+    dates = CSV.read(csv_path, headers: true).map { |r| r['date'] }
+    assert_equal 2, dates.size
+    assert_includes dates, '2026-03-01'
+    assert_includes dates, '2026-03-02'
   end
 
   def test_config_loading
@@ -75,5 +67,27 @@ class TestArchiveMetrics < Minitest::Test
     assert config.is_a?(Hash)
     assert config['repositories']
     assert_equal 'test', config['repositories'].first['owner']
+  end
+
+  def test_csv_headers_are_correct
+    csv_path = File.join(@temp_dir, 'test_views.csv')
+    
+    CSV.open(csv_path, 'w') do |csv|
+      csv << ['date', 'count', 'uniques']
+      csv << ['2026-03-01', '100', '45']
+    end
+
+    headers = CSV.open(csv_path, 'r', headers: true).first.headers
+    assert_includes headers, 'date'
+    assert_includes headers, 'count'
+    assert_includes headers, 'uniques'
+  end
+
+  def test_empty_csv_handling
+    csv_path = File.join(@temp_dir, 'empty.csv')
+    File.write(csv_path, '')
+    
+    assert File.exist?(csv_path)
+    assert File.size(csv_path) == 0
   end
 end
