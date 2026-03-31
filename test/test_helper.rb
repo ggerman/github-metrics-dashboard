@@ -7,28 +7,50 @@ SimpleCov.start do
   coverage_dir 'coverage'
 end
 
+# ================================================================
+# PRIMERO: Requerir Minitest (esto es lo que faltaba)
+# ================================================================
 require 'minitest/autorun'
 require 'minitest/reporters'
-require 'webmock/minitest'
-require 'vcr'
-require 'tempfile'
 require 'fileutils'
+require 'csv'
+require 'tempfile'
 
-# Nice test output
+# ================================================================
+# Recién después configuramos los reporters
+# ================================================================
 Minitest::Reporters.use! [
   Minitest::Reporters::DefaultReporter.new,
   Minitest::Reporters::SpecReporter.new
 ]
 
-# VCR configuration for recording API calls
-VCR.configure do |config|
-  config.cassette_library_dir = 'test/cassettes'
-  config.hook_into :webmock
-  config.filter_sensitive_data('<GITHUB_TOKEN>') { ENV['GITHUB_TOKEN'] || 'test-token' }
-  config.allow_http_connections_when_no_cassette = false
+# ================================================================
+# Opcional: webmock y vcr solo si están instalados
+# ================================================================
+begin
+  require 'webmock/minitest'
+  require 'vcr'
+  
+  VCR.configure do |config|
+    config.cassette_library_dir = 'test/cassettes'
+    config.hook_into :webmock
+    config.filter_sensitive_data('<GITHUB_TOKEN>') { ENV['GITHUB_TOKEN'] || 'test-token' }
+    config.filter_sensitive_data('<GITHUB_USER>') { ENV['GITHUB_USER'] || 'test-user' }
+    config.allow_http_connections_when_no_cassette = true
+    config.ignore_localhost = true
+    config.default_cassette_options = {
+      record: :new_episodes,
+      match_requests_on: [:method, :uri, :body]
+    }
+  end
+rescue LoadError
+  puts "WebMock/VCR not available, skipping HTTP mocking"
 end
 
-# Helper methods for tests
+# ================================================================
+# Helper methods para todos los tests
+# ================================================================
+
 module TestHelper
   def fixture_path(filename)
     File.join(File.dirname(__FILE__), 'fixtures', filename)
@@ -52,5 +74,39 @@ module TestHelper
     temp.write(repos.to_yaml)
     temp.close
     temp.path
+  end
+
+  def with_env(key, value)
+    old_value = ENV[key]
+    ENV[key] = value
+    yield
+  ensure
+    ENV[key] = old_value
+  end
+
+  def with_vcr(cassette_name, &block)
+    if defined?(VCR)
+      VCR.use_cassette(cassette_name, &block)
+    else
+      yield
+    end
+  end
+end
+
+# ================================================================
+# Configuración de tests
+# ================================================================
+
+class Minitest::Test
+  include TestHelper
+
+  def setup
+    @temp_dir = Dir.mktmpdir
+  end
+
+  def teardown
+    if @temp_dir && Dir.exist?(@temp_dir)
+      FileUtils.remove_entry @temp_dir
+    end
   end
 end

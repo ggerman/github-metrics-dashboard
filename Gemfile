@@ -15,4 +15,6 @@ group :development, :test do
   gem 'simplecov', '~> 0.22', require: false
   gem 'rubocop', '~> 1.50', require: false
   gem 'brakeman', '~> 6.0', require: false
+  gem 'webmock', '~> 3.19'
+  gem 'vcr', '~> 6.2'
 end
