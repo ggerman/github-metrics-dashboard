@@ -54,3 +54,10 @@ build-iPhoneSimulator/
 
 # Used by RuboCop. Remote config files pulled in from inherit_from directive.
 # .rubocop-https?--*
+
+# Local file for test the project
+Dockerfile
+Gemfile.lock
+data/
+docker-compose.yml
+
