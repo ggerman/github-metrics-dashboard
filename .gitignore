@@ -60,4 +60,4 @@ Dockerfile
 Gemfile.lock
 data/
 docker-compose.yml
-
+output
